@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import random
 import time
+from IPython.display import display, clear_output
 from Gridworld import Gridworld
 
 actions = [[-1, 0], [0, 1], [1, 0], [0, -1]] #up, right, down, left = (clockwise from up) 

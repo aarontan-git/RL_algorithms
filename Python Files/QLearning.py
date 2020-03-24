@@ -82,6 +82,7 @@ lr = 0.1
 epsilon = [0.01, 0.1, 0.25]
 runs = 20
 episode_length = 500
+window_length = int(episode_length/20)
 
 for eps in epsilon:
     average_test_reward_list = []
@@ -164,14 +165,16 @@ for eps in epsilon:
             # sum up all the rewards obtained during test trajectory and append to list
             episode_test_reward_list.append(sum(test_reward_list))
 
+            # print current episode
+            clear_output(wait=True)
+            display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
+
         # get average test reward
         average_test_reward_list.append(Average(episode_test_reward_list))
 
-        window_length = int(episode_length/20)
-
         # test reward of each episode, where delta is the change in Q values
         plt.plot(episode_test_reward_list)
-        plt.title('Testing: Reward with Trained Policy after Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Testing: Q Learning Reward after Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Reward')
         plt.savefig('Graphs/QLearning/test_reward/test_reward_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
@@ -180,7 +183,7 @@ for eps in epsilon:
 
         # max delta of each episode, where delta is the change in Q values
         plt.plot(delta_list)
-        plt.title('Training: Max Delta per Episode for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Training: Q Learning Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Max Delta')
         # plot moving average
@@ -193,20 +196,20 @@ for eps in epsilon:
 
         # average reward per episode
         plt.plot(average_reward_list)
-        plt.title('Training: Average Reward per Episode for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Training: Q Learning Avg. Reward for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
         # plot moving average
         reward_frame = pd.DataFrame(average_reward_list)
         rolling_mean = reward_frame.rolling(window=window_length).mean()
         plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.savefig('Graphs/QLearning/average_reward/average_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/QLearning/average_reward/avg_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
         # cumulative reward per episode
         plt.plot(cumulative_reward_list)
-        plt.title('Training: Cumulative Reward per Episode for Run: '+ str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Training: Q Learning Cumulative Reward for Run: '+ str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Cumulative Reward')
         plt.savefig('Graphs/QLearning/cumulative_reward/cumulative_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
@@ -215,10 +218,10 @@ for eps in epsilon:
     
     # test reward of each episode, where delta is the change in Q values
     plt.plot(average_test_reward_list)
-    plt.title('Testing: Average Reward per Run, Epsilon: ' + str(float(eps)))
+    plt.title('Testing: Q Learning Avg. Reward, Epsilon: ' + str(float(eps)))
     plt.xlabel('Run')
     plt.ylabel('Reward')
     plt.xticks(np.arange(0, runs, step=1))
-    plt.savefig('Graphs/QLearning/average_test_rewards/average_test_reward_epsilon_' + str(float(eps)) + '.png')
+    plt.savefig('Graphs/QLearning/average_test_rewards/avg_test_reward_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)

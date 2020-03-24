@@ -22,19 +22,21 @@ def choose_action(state, epsilon):
     # pick a random action
     random_action_index = random.choice(range(4))
 
-    # while random action is the same as the best action, pick a new action
-    while random_action_index == best_action_index:
-        random_action_index = random.choice(range(4))
-
     # choose an action based on exploit or explore
     if action_type == 0:
         # explore
-        # print("explore")
+        # while random action is the same as the best action, pick a new action
+        while random_action_index == best_action_index:
+            random_action_index = random.choice(range(4))
         action_index = random_action_index
     else:
         # exploit
         # print("exploit")
         action_index = best_action_index
+    
+    # if Q_values is all zero, randomly pick an action
+    if np.count_nonzero(Q_values[state]) == 0:
+        action_index = random.randint(0,3)
         
     return action_index
 
@@ -79,6 +81,7 @@ gamma = 0.99
 lr = 0.1
 epsilon = [0.01, 0.1, 0.25]
 runs = 20
+episode_length = 500
 
 for eps in epsilon:
     average_test_reward_list = []
@@ -94,8 +97,8 @@ for eps in epsilon:
         delta_list = []
         episode_test_reward_list = []
         
-        # iterate over 500 episodes
-        for episode in range(500):
+        # iterate over episodes
+        for episode in range(episode_length):
 
             # initialize state (output: [4, 4])
             state = grid.initial_state()
@@ -145,8 +148,14 @@ for eps in epsilon:
             
             # Generate Greedy policy based on Q_values after each episode
             for state in range(len(Q_values)):
+
                 # find the best action at each state
                 best_action = np.argmax(Q_values[state])
+
+                # if Q_values is all zero, randomly pick an action
+                if np.count_nonzero(Q_values[state]) == 0:
+                    best_action = random.randint(0,3)
+
                 policy[state][best_action] = 1
             
             # Generate test trajectory with the greedy policy
@@ -157,6 +166,8 @@ for eps in epsilon:
 
         # get average test reward
         average_test_reward_list.append(Average(episode_test_reward_list))
+
+        window_length = int(episode_length/20)
 
         # test reward of each episode, where delta is the change in Q values
         plt.plot(episode_test_reward_list)
@@ -174,9 +185,9 @@ for eps in epsilon:
         plt.ylabel('Max Delta')
         # plot moving average
         delta_frame = pd.DataFrame(delta_list)
-        rolling_mean = delta_frame.rolling(window=10).mean()
+        rolling_mean = delta_frame.rolling(window=window_length).mean()
         plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.savefig('Graphs/QLearning/delta/delta_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/QLearning/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
@@ -187,9 +198,9 @@ for eps in epsilon:
         plt.ylabel('Average Reward')
         # plot moving average
         reward_frame = pd.DataFrame(average_reward_list)
-        rolling_mean = reward_frame.rolling(window=10).mean()
+        rolling_mean = reward_frame.rolling(window=window_length).mean()
         plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.savefig('Graphs/QLearning/average_reward/average_reward_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/QLearning/average_reward/average_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
@@ -198,7 +209,7 @@ for eps in epsilon:
         plt.title('Training: Cumulative Reward per Episode for Run: '+ str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Cumulative Reward')
-        plt.savefig('Graphs/QLearning/cumulative_reward/cumulative_reward_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/QLearning/cumulative_reward/cumulative_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
     
@@ -207,7 +218,7 @@ for eps in epsilon:
     plt.title('Testing: Average Reward per Run, Epsilon: ' + str(float(eps)))
     plt.xlabel('Run')
     plt.ylabel('Reward')
-    plt.xticks(np.arange(1, runs+1, step=1))
-    plt.savefig('Graphs/QLearning/test_reward/average_rewards/average_test_reward_epsilon_' + str(float(eps)) + '.png')
+    plt.xticks(np.arange(0, runs, step=1))
+    plt.savefig('Graphs/QLearning/average_test_rewards/average_test_reward_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)

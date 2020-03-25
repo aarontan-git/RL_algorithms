@@ -6,6 +6,7 @@ import random
 import time
 from IPython.display import display, clear_output
 from Gridworld import Gridworld
+import pickle
 
 actions = [[-1, 0], [0, 1], [1, 0], [0, -1]] #up, right, down, left = (clockwise from up) 
 action_count = len(actions) # total number of actions
@@ -88,7 +89,9 @@ window_length = int(episode_length/20)
 
 for eps in epsilon:
     average_test_reward_list = []
-    for run in range(runs):
+    Q_values_list = []
+
+    for run in range(1, runs+1):
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
@@ -172,6 +175,8 @@ for eps in epsilon:
         # get average test reward
         average_test_reward_list.append(Average(episode_test_reward_list))
 
+        Q_values_list.append(Q_values)
+
         # test reward of each episode, where delta is the change in Q values
         plt.plot(episode_test_reward_list)
         plt.title('Testing: Sarsa Reward after Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
@@ -229,3 +234,7 @@ for eps in epsilon:
     plt.savefig('Graphs/Sarsa/average_test_rewards/avg_test_reward_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)
+
+    # save Q value tables to a pickle
+    with open('Graphs/MonteCarlo/Qvalues/MC_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
+        pickle.dump(Q_values_list, f)

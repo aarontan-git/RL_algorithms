@@ -233,5 +233,5 @@ for eps in epsilon:
     time.sleep(0.1)
 
     # save Q value tables to a pickle
-    with open('Graphs/MonteCarlo/Qvalues/MC_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
+    with open('Graphs/QLearning/Qvalues/Qlearning_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
         pickle.dump(Q_values_list, f)

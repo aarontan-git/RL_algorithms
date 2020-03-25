@@ -82,8 +82,8 @@ grid = Gridworld(5)
 gamma = 0.99
 lr = 0.1
 epsilon = [0.01, 0.1, 0.25]
-runs = 3
-episode_length = 50
+runs = 20
+episode_length = 500
 window_length = int(episode_length/20)
 
 reward_epsilon = []
@@ -123,7 +123,7 @@ for eps in epsilon:
             delta = 0
             
             # iterate over 200 steps within each episode
-            for step in range(10):
+            for step in range(200):
 
                 # get state index (output: 24)
                 state_index = grid.states.index(state)
@@ -185,19 +185,35 @@ for eps in epsilon:
 
         # test reward of each episode, where delta is the change in Q values
         plt.plot(reward_episode)
-        plt.title('Reward Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Average Reward per Episode during Training, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
-        plt.savefig('Graphs/testing/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+        delta_frame = pd.DataFrame(reward_episode)
+        rolling_mean = delta_frame.rolling(window=window_length).mean()
+        plt.plot(rolling_mean, label='Moving Average', color='orange')
+        plt.savefig('Graphs/QLearning/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
         # test reward of each episode, where delta is the change in Q values
         plt.plot(test_reward)
-        plt.title('Reward Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Average Reward per Episode during Testing, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
-        plt.savefig('Graphs/testing/reward_episode/TEST_REWARD_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/QLearning/test_reward_episode/test_reward_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+        plt.clf()
+        time.sleep(0.1)
+
+        # max delta of each episode, where delta is the change in Q values
+        plt.plot(delta_list)
+        plt.title('Q Learning Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.xlabel('Episode')
+        plt.ylabel('Max Delta')
+        # plot moving average
+        delta_frame = pd.DataFrame(delta_list)
+        rolling_mean = delta_frame.rolling(window=window_length).mean()
+        plt.plot(rolling_mean, label='Moving Average', color='orange')
+        plt.savefig('Graphs/QLearning/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
@@ -208,83 +224,68 @@ for eps in epsilon:
 
     # test reward of each episode, where delta is the change in Q values
     plt.plot(reward_run)
-    plt.title('Reward Run')
+    plt.title('Average Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
-    plt.savefig('Graphs/testing/reward_run/reward_epsilon_' + str(float(eps)) + '.png')
+    plt.savefig('Graphs/QLearning/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)
 
     # test reward of each episode, where delta is the change in Q values
     plt.plot(test_reward_run)
-    plt.title('Reward Run')
+    plt.title('Average Test Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
-    plt.savefig('Graphs/testing/test_reward_run/TEST_REWARD_RUN_epsilon_' + str(float(eps)) + '.png')
+    plt.savefig('Graphs/QLearning/test_reward_run/test_reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)
 
-    # max delta of each episode, where delta is the change in Q values
-    plt.plot(delta_list)
-    plt.title('Training: Q Learning Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
-    plt.xlabel('Episode')
-    plt.ylabel('Max Delta')
-    # plot moving average
-    delta_frame = pd.DataFrame(delta_list)
-    rolling_mean = delta_frame.rolling(window=window_length).mean()
-    plt.plot(rolling_mean, label='Moving Average', color='orange')
-    plt.savefig('Graphs/QLearning/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
-    plt.clf()
-    time.sleep(0.1)
-
-    save Q value tables to a pickle
+    # save Q value tables to a pickle
     with open('Graphs/QLearning/Qvalues/Qlearning_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
         pickle.dump(Q_values_list, f)
 
 # test reward of each episode, where delta is the change in Q values
 plt.plot(reward_epsilon)
-plt.title('Reward Epsilon')
+plt.title('Average Reward for each Epsilon')
 plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
-plt.savefig('Graphs/testing/reward_epsilon/reward_epsilon.png')
+plt.savefig('Graphs/QLearning/reward_epsilon/reward_epsilon.png')
 plt.clf()
 time.sleep(0.1)
 
-
-
 # test reward of each episode, where delta is the change in Q values
-for r in range(runs):
+for r in range(3):
     plt.plot(reward_run_all[r])
-plt.title('All Reward Run')
+plt.title('Average Reward for each Run during Training')
 plt.xlabel('Run')
 plt.xticks(np.arange(runs), label)
 plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
-plt.savefig('Graphs/testing/reward_run/ALL_reward_epsilon.png')
+plt.savefig('Graphs/QLearning/reward_run/reward_run_all.png')
 plt.clf()
 time.sleep(0.1)
 
 # test reward of each episode, where delta is the change in Q values
-for r in range(runs):
+for r in range(3):
     plt.plot(test_reward_run_all[r])
-plt.title('All Reward Run')
+plt.title('Average Reward for each Run during Testing')
 plt.xlabel('Run')
 plt.xticks(np.arange(runs), label)
 plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
-plt.savefig('Graphs/testing/test_reward_run/ALL_reward_epsilon.png')
+plt.savefig('Graphs/QLearning/test_reward_run/test_reward_run_all.png')
 plt.clf()
 time.sleep(0.1)
 
 # test reward of each episode, where delta is the change in Q values
 plt.plot(test_reward_epsilon)
-plt.title('Reward Epsilon')
+plt.title('Average Reward for Each Epsilon')
 plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
-plt.savefig('Graphs/testing/test_reward_epsilon/TEST_REWARD_EPSILON.png')
+plt.savefig('Graphs/QLearning/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
 time.sleep(0.1)

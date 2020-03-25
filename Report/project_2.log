@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2020.1.22)  15 MAR 2020 12:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2020.1.22)  25 MAR 2020 08:29
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/aaron/Documents/Hub/project_2/Report/assignment-2.tex
-(/home/aaron/Documents/Hub/project_2/Report/assignment-2.tex
+**/home/aaron/Documents/Hub/project_2/Report/project_2.tex
+(/home/aaron/Documents/Hub/project_2/Report/project_2.tex
 LaTeX2e <2016/02/01>
 Babel <3.9q> and hyphenation patterns for 81 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -1316,18 +1316,8 @@ File: T1XCharter-TLF.fd 2013/10/27 (autoinst) Font definitions for T1/XCharter-T
 )
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
 (Font)              scaled to size 10.0pt on input line 21.
- (/home/aaron/Documents/Hub/project_2/Report/assignment-2.aux
-
-LaTeX Warning: Label `lst:code_direct' multiply defined.
-
-
-LaTeX Warning: Label `lst:code_direct' multiply defined.
-
-
-LaTeX Warning: Label `lst:code_direct' multiply defined.
-
-)
-\openout1 = `assignment-2.aux'.
+ (/home/aaron/Documents/Hub/project_2/Report/project_2.aux)
+\openout1 = `project_2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
 LaTeX Font Info:    ... okay on input line 21.
@@ -1445,109 +1435,11 @@ LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
 (Font)              scaled to size 14.4pt on input line 25.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 10.95pt on input line 29.
+(Font)              scaled to size 10.95pt on input line 26.
+LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/it' will be
+(Font)              scaled to size 10.95pt on input line 26.
 
-Underfull \hbox (badness 10000) in paragraph at lines 29--31
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 33--39
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 41--46
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 47--56
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 57--67
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 69--75
-
- []
-
-LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 81.
-LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 6.0pt on input line 81.
-[1
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/it' will be
-(Font)              scaled to size 10.95pt on input line 107.
-
-Underfull \hbox (badness 10000) in paragraph at lines 114--120
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 123--129
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 130--147
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 149--156
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 167--178
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 179--185
-
- []
-
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 210--212
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 214--223
-
- []
-
-
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 228.
-
-
-LaTeX Warning: Command \textquoteright invalid in math mode on input line 229.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 224--230
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 231--239
-
- []
-
-<./pictures/bellman_groups.png, id=21, 350.30875pt x 346.29375pt>
-File: ./pictures/bellman_groups.png Graphic file (type png)
- <use ./pictures/bellman_groups.png>
-Package pdftex.def Info: ./pictures/bellman_groups.png used on input line 241.
-(pdftex.def)             Requested size: 140.12102pt x 138.51503pt.
- [3 <./pictures/bellman_groups.png>] [4]
-Underfull \hbox (badness 10000) in paragraph at lines 381--387
+Underfull \hbox (badness 10000) in paragraph at lines 26--28
 
  []
 
@@ -1555,229 +1447,167 @@ Underfull \hbox (badness 10000) in paragraph at lines 381--387
 File: lstlang1.sty 2015/06/04 1.6 listings language file
 )
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 393.
+(Font)              scaled to size 9.0pt on input line 42.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 394.
+(Font)              scaled to size 9.0pt on input line 43.
 LaTeX Font Info:    Font shape `T1/XCharter-TLF/m/it' will be
-(Font)              scaled to size 9.0pt on input line 395.
- [5]
-Underfull \hbox (badness 10000) in paragraph at lines 457--459
+(Font)              scaled to size 9.0pt on input line 43.
 
- []
 
-<./pictures/v_evaluation.png, id=34, 361.35pt x 112.42pt>
-File: ./pictures/v_evaluation.png Graphic file (type png)
- <use ./pictures/v_evaluation.png>
-Package pdftex.def Info: ./pictures/v_evaluation.png used on input line 473.
-(pdftex.def)             Requested size: 216.81168pt x 67.45251pt.
+/home/aaron/Documents/Hub/project_2/Report/project_2.tex:47: LaTeX Error: There's no line here to end.
 
-Underfull \hbox (badness 10000) in paragraph at lines 478--482
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.47 
+     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
 
- []
 
-<./pictures/policy_evaluation_99.png, id=35, 462.528pt x 346.896pt>
-File: ./pictures/policy_evaluation_99.png Graphic file (type png)
- <use ./pictures/policy_evaluation_99.png>
-Package pdftex.def Info: ./pictures/policy_evaluation_99.png used on input line 484.
-(pdftex.def)             Requested size: 323.76738pt x 242.82553pt.
- [6 <./pictures/v_evaluation.png> <./pictures/policy_evaluation_99.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 494--496
-
+Overfull \hbox (3.76056pt too wide) in paragraph at lines 60--61
+[][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 497--502
-
+Overfull \hbox (3.76056pt too wide) in paragraph at lines 61--62
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 503--508
+/home/aaron/Documents/Hub/project_2/Report/project_2.tex:81: LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.81 \section
+             {Implementation}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 84--85
 
  []
 
+[1
 
-Underfull \hbox (badness 10000) in paragraph at lines 510--515
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 
- []
+/home/aaron/Documents/Hub/project_2/Report/project_2.tex:87: LaTeX Error: There's no line here to end.
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 516--524
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 525--531
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 532--545
-
- []
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.87 \indent
+            \textbf{1. First-Visit On-Policy Monte Carlo for Control}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 546--552
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 553--556
-
- []
-
-[7] <./pictures/VI_chart.png, id=46, 812.03375pt x 928.46875pt>
-File: ./pictures/VI_chart.png Graphic file (type png)
- <use ./pictures/VI_chart.png>
-Package pdftex.def Info: ./pictures/VI_chart.png used on input line 559.
-(pdftex.def)             Requested size: 406.01588pt x 464.23325pt.
- [8 <./pictures/VI_chart.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 569--571
+Underfull \hbox (badness 10000) in paragraph at lines 87--95
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 572--577
+Underfull \hbox (badness 10000) in paragraph at lines 96--101
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 578--591
+Underfull \hbox (badness 10000) in paragraph at lines 116--117
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 592--597
+Underfull \hbox (badness 10000) in paragraph at lines 118--123
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 598--606
+/home/aaron/Documents/Hub/project_2/Report/project_2.tex:127: Package inputenc Error: Unicode char ε (U+3B5)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.127 trial).}
+               \\
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--128
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 607--613
+Underfull \hbox (badness 10000) in paragraph at lines 129--132
+
+ []
+
+LaTeX Font Info:    Try loading font information for TS1+XCharter-TLF on input line 136.
+(/usr/share/texlive/texmf-dist/tex/latex/xcharter/TS1XCharter-TLF.fd
+File: TS1XCharter-TLF.fd 2013/10/27 (autoinst) Font definitions for TS1/XCharter-TLF.
+)
+LaTeX Font Info:    Font shape `TS1/XCharter-TLF/b/n' will be
+(Font)              scaled to size 10.95pt on input line 136.
+
+Underfull \hbox (badness 10000) in paragraph at lines 133--137
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 614--621
+Underfull \hbox (badness 10000) in paragraph at lines 138--143
 
  []
 
+[2]
 
-Underfull \hbox (badness 10000) in paragraph at lines 622--628
+/home/aaron/Documents/Hub/project_2/Report/project_2.tex:166: Package inputenc Error: Unicode char ε (U+3B5)
+(inputenc)                not set up for use with LaTeX.
 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 629--632
-
- []
-
-[9] <./pictures/PI_chart.png, id=53, 893.3375pt x 935.495pt>
-File: ./pictures/PI_chart.png Graphic file (type png)
- <use ./pictures/PI_chart.png>
-Package pdftex.def Info: ./pictures/PI_chart.png used on input line 635.
-(pdftex.def)             Requested size: 446.66765pt x 467.74635pt.
- [10 <./pictures/PI_chart.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 647--649
-
- []
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.166 ...gorithms (e.g. bias/variance trade-off).}
+                                                  
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 650--653
+Underfull \hbox (badness 10000) in paragraph at lines 158--178
 
  []
 
-<./pictures/value_functions.png, id=57, 1791.69376pt x 837.1275pt>
-File: ./pictures/value_functions.png Graphic file (type png)
- <use ./pictures/value_functions.png>
-Package pdftex.def Info: ./pictures/value_functions.png used on input line 655.
-(pdftex.def)             Requested size: 456.88954pt x 213.47107pt.
+[3] [4] (/home/aaron/Documents/Hub/project_2/Report/project_2.aux)
 
-Overfull \hbox (1.64543pt too wide) in paragraph at lines 655--657
- [][] 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 660--667
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 668--678
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 679--686
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 687--700
-
- []
-
-[11 <./pictures/value_functions.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 701--711
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 712--718
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 719--725
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 726--734
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 735--743
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 744--750
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 751--764
-
- []
-
-[12] <./pictures/transition_matrix.png, id=64, 823.075pt x 583.17876pt>
-File: ./pictures/transition_matrix.png Graphic file (type png)
- <use ./pictures/transition_matrix.png>
-Package pdftex.def Info: ./pictures/transition_matrix.png used on input line 770.
-(pdftex.def)             Requested size: 411.53648pt x 291.58867pt.
- [13 <./pictures/transition_matrix.png>] (/home/aaron/Documents/Hub/project_2/Report/assignment-2.aux)
-
-LaTeX Warning: There were multiply-defined labels.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 26633 strings out of 493029
- 497183 string characters out of 6136234
- 554923 words of memory out of 5000000
- 29715 multiletter control sequences out of 15000+600000
- 93831 words of font info for 78 fonts, out of 8000000 for 9000
+ 26611 strings out of 493029
+ 496574 string characters out of 6136234
+ 548011 words of memory out of 5000000
+ 29695 multiletter control sequences out of 15000+600000
+ 83085 words of font info for 78 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 69i,9n,80p,10539b,1244s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/xcharter/xch_tuu2ww.enc}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-Bold.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-Italic.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-Roman.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1200.pfb>
-Output written on /home/aaron/Documents/Hub/project_2/Report/assignment-2.pdf (13 pages, 819997 bytes).
+ 69i,6n,80p,10536b,1242s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/xcharter/xch_jfcsri.enc}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/xcharter/xch_tuu2ww.enc}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-Bold.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-BoldItalic.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-Italic.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/xcharter/XCharter-Roman.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1200.pfb>
+Output written on /home/aaron/Documents/Hub/project_2/Report/project_2.pdf (4 pages, 146570 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
- 76 compressed objects within 1 object stream
+ 61 PDF objects out of 1000 (max. 8388607)
+ 45 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 48 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

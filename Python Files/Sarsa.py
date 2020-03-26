@@ -250,9 +250,9 @@ for eps in epsilon:
 
 # Average Reward for each Epsilon
 x_label = ('0.01', '0.1', '0.25')
-plt.bar(x_label, test_reward_epsilon)
+plt.bar(x_label, reward_epsilon)
 # plt.plot(reward_epsilon)
-plt.title('Average Reward for each Epsilon')
+plt.title('Average Reward for each Epsilon during Training')
 plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')

@@ -86,22 +86,32 @@ runs = 20
 episode_length = 500
 window_length = int(episode_length/20)
 
+reward_epsilon = []
+reward_run_all = []
+test_reward_epsilon = []
+test_reward_run_all = []
+
+# plot
+label = []
+for r in range(1, runs+1):
+    label.append(str(r))
 
 for eps in epsilon:
-    average_test_reward_list = []
     Q_values_list = []
+    reward_run = []
+    test_reward_run =[]
 
     for run in range(1, runs+1):
+
+        # define lists
+        reward_episode = []
+        test_reward = []
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
 
         # define lists for plots
-        average_reward_list = []
-        cumulative_reward_list = []
-        cumulative_reward = 0
         delta_list = []
-        episode_test_reward_list =[]
 
         # iterate over episodes
         for episode in range(episode_length):
@@ -146,53 +156,58 @@ for eps in epsilon:
             
             delta_list.append(delta)
             
-            average_reward_list.append(Average(reward_list))
+            # sum rewards
+            reward_episode.append(sum(reward_list))
             
-            # cumulative rewards
-            cumulative_reward = cumulative_reward + sum(reward_list)
-            cumulative_reward_list.append(cumulative_reward)
-            
-            # initialize q values for all state action pairs
-            policy = np.zeros((state_count, action_count))
-            
+            # TESTING AFTER EACH EPISODE ------------------------------------------------------------
+            # initialize policy
+            policy = np.zeros((state_count, action_count))            
             # Generate Greedy policy based on Q_values after each episode
             for state in range(len(Q_values)):
                 # find the best action at each state
                 best_action = np.argmax(Q_values[state])
                 # write deterministic policy based on Q_values
                 policy[state][best_action] = 1
-            
             # Generate test trajectory with the greedy policy
             state_list, action_list, test_reward_list = generate_episode(200)
-            
-            # sum up all the rewards obtained during test trajectory and append to list
-            episode_test_reward_list.append(sum(test_reward_list))
-            
+            test_reward.append(sum(test_reward_list))
+            #----------------------------------------------------------------------------------------
+
             # print current episode
             clear_output(wait=True)
             display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
 
+        test_reward_run.append(Average(test_reward))
+
         # get average test reward
-        average_test_reward_list.append(Average(episode_test_reward_list))
+        reward_run.append(Average(reward_episode))
 
         Q_values_list.append(Q_values)
 
-        # test reward of each episode, where delta is the change in Q values
-        plt.plot(episode_test_reward_list)
-        plt.title('Testing: Sarsa Reward after Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        # Average Reward per Episode during Training with different runs and epsilons
+        plt.plot(reward_episode)
+        plt.title('Average Reward per Episode during Training, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
-        plt.ylabel('Reward')
-        # plot moving average
-        delta_frame = pd.DataFrame(episode_test_reward_list)
+        plt.ylabel('Average Reward')
+        delta_frame = pd.DataFrame(reward_episode)
         rolling_mean = delta_frame.rolling(window=window_length).mean()
         plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.savefig('Graphs/Sarsa/test_reward/test_reward_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/Sarsa/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+        plt.clf()
+        time.sleep(0.1)
+
+        # Average Reward per Episode during Testing with different runs and epsilons
+        plt.plot(test_reward)
+        plt.title('Average Reward per Episode during Testing, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.xlabel('Episode')
+        plt.ylabel('Average Reward')
+        plt.savefig('Graphs/Sarsa/test_reward_episode/test_reward_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
         # max delta of each episode, where delta is the change in Q values
         plt.plot(delta_list)
-        plt.title('Training: Sarsa Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('Sarsa Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Max Delta')
         # plot moving average
@@ -203,38 +218,80 @@ for eps in epsilon:
         plt.clf()
         time.sleep(0.1)
 
-        # average reward per episode
-        plt.plot(average_reward_list)
-        plt.title('Training: Sarsa Avg. Reward for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
-        plt.xlabel('Episode')
-        plt.ylabel('Average Reward')
-        # plot moving average
-        reward_frame = pd.DataFrame(average_reward_list)
-        rolling_mean = reward_frame.rolling(window=window_length).mean()
-        plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.savefig('Graphs/Sarsa/average_reward/avg_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
-        plt.clf()
-        time.sleep(0.1)
+    # append lists for plotting
+    reward_run_all.append(reward_run)
+    test_reward_run_all.append(test_reward_run)
+    reward_epsilon.append(Average(reward_run))
+    test_reward_epsilon.append(Average(test_reward_run))
 
-        # cumulative reward per episode
-        plt.plot(cumulative_reward_list)
-        plt.title('Training: Sarsa Cumulative Reward for Run: '+ str(int(run)) + ', Epsilon: ' + str(float(eps)))
-        plt.xlabel('Episode')
-        plt.ylabel('Cumulative Reward')
-        plt.savefig('Graphs/Sarsa/cumulative_reward/cumulative_reward_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
-        plt.clf()
-        time.sleep(0.1)
-
-    # test reward of each episode, where delta is the change in Q values
-    plt.plot(average_test_reward_list)
-    plt.title('Testing: Sarsa Avg. Reward, Epsilon: ' + str(float(eps)))
+    # Average Reward for each Run with different Epsilon
+    plt.plot(reward_run)
+    plt.title('Average Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
-    plt.ylabel('Reward')
-    plt.xticks(np.arange(0, runs, step=1))
-    plt.savefig('Graphs/Sarsa/average_test_rewards/avg_test_reward_epsilon_' + str(float(eps)) + '.png')
+    plt.xticks(np.arange(runs), label)
+    plt.ylabel('Average Reward')
+    plt.savefig('Graphs/Sarsa/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
+    plt.clf()
+    time.sleep(0.1)
+
+    # Average Test Reward for each Run with different Epsilon
+    plt.plot(test_reward_run)
+    plt.title('Average Test Reward for each Run with Epsilon: '+ str(float(eps)))
+    plt.xlabel('Run')
+    plt.xticks(np.arange(runs), label)
+    plt.ylabel('Average Reward')
+    plt.savefig('Graphs/Sarsa/test_reward_run/test_reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)
 
     # save Q value tables to a pickle
     with open('Graphs/Sarsa/Qvalues/Sarsa_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
         pickle.dump(Q_values_list, f)
+
+# Average Reward for each Epsilon
+x_label = ('0.01', '0.1', '0.25')
+plt.bar(x_label, test_reward_epsilon)
+# plt.plot(reward_epsilon)
+plt.title('Average Reward for each Epsilon')
+plt.xlabel('Epsilon')
+plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
+plt.ylabel('Average Reward')
+plt.savefig('Graphs/Sarsa/reward_epsilon/reward_epsilon.png')
+plt.clf()
+time.sleep(0.1)
+
+# Average Reward for each Run during Training
+for r in range(3):
+    plt.plot(reward_run_all[r])
+plt.title('Average Reward for each Run during Training')
+plt.xlabel('Run')
+plt.xticks(np.arange(runs), label)
+plt.ylabel('Average Reward')
+plt.legend(('0.01','0.1','0.25'))
+plt.savefig('Graphs/Sarsa/reward_run/reward_run_all.png')
+plt.clf()
+time.sleep(0.1)
+
+# Average Reward for each Run during Testing
+for r in range(3):
+    plt.plot(test_reward_run_all[r])
+plt.title('Average Reward for each Run during Testing')
+plt.xlabel('Run')
+plt.xticks(np.arange(runs), label)
+plt.ylabel('Average Reward')
+plt.legend(('0.01','0.1','0.25'))
+plt.savefig('Graphs/Sarsa/test_reward_run/test_reward_run_all.png')
+plt.clf()
+time.sleep(0.1)
+
+# Average Reward for Each Epsilon
+x_label = ('0.01', '0.1', '0.25')
+plt.bar(x_label, test_reward_epsilon)
+# plt.plot(test_reward_epsilon)
+plt.title('Average Reward for Each Epsilon')
+plt.xlabel('Epsilon')
+plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
+plt.ylabel('Average Reward')
+plt.savefig('Graphs/Sarsa/test_reward_epsilon/test_reward_epsilon.png')
+plt.clf()
+time.sleep(0.1)

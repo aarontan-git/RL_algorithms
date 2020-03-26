@@ -226,7 +226,7 @@ for eps in epsilon:
 
         # max delta of each episode, where delta is the change in Q values
         plt.plot(delta_list)
-        plt.title('Sarsa Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.title('TdLambda Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Max Delta')
         # plot moving average
@@ -268,7 +268,9 @@ for eps in epsilon:
         pickle.dump(Q_values_list, f)
 
 # Average Reward for each Epsilon
-plt.plot(reward_epsilon)
+x_label = ('0.01', '0.1', '0.25')
+plt.bar(x_label, test_reward_epsilon)
+# plt.plot(reward_epsilon)
 plt.title('Average Reward for each Epsilon')
 plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
@@ -302,7 +304,9 @@ plt.clf()
 time.sleep(0.1)
 
 # Average Reward for Each Epsilon
-plt.plot(test_reward_epsilon)
+x_label = ('0.01', '0.1', '0.25')
+plt.bar(x_label, test_reward_epsilon)
+# plt.plot(test_reward_epsilon)
 plt.title('Average Reward for Each Epsilon')
 plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))

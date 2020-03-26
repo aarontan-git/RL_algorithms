@@ -13,7 +13,7 @@ action_count = len(actions) # total number of actions
 gridSize = 5 # create a square grid of gridSize by gridSize
 state_count = gridSize*gridSize # total number of states
 
-def generate_episode(steps):
+def generate_episode(steps, policy): #Modification: added policy to the function 
 
     # set initial state
     state_vector = grid.initial_state()
@@ -32,13 +32,12 @@ def generate_episode(steps):
 
         # get new state and reward after taking action from current state
         new_state_vector, reward = grid.transition_reward(state_vector, action_vector)
-        state_vector = list(new_state_vector)
-
+        state_vector = list(new_state_vector) 
         # save state, action chosen and reward to list
         state_list.append(state_vector)
         action_list.append(action_vector)
         reward_list.append(reward)
-        
+       
     return state_list, action_list, reward_list
 
 # define average function
@@ -50,7 +49,6 @@ grid = Gridworld(5)
 
 # intialize parameters
 gamma = 0.99
-epsilon = 0.1
 epsilon = [0.01, 0.1, 0.25]
 runs = 20
 episode_length = 500
@@ -72,10 +70,16 @@ for eps in epsilon:
 
     for run in range(1, runs+1):
 
-        # Initiate a random policy
-        random_policy = np.random.randint(100, size=(state_count, action_count))
-        random_policy = random_policy/random_policy.sum(axis=1)[:,None]
-        policy = random_policy
+        # random e soft policy
+        policy = np.zeros((state_count, action_count))
+        for state in range(len(policy)):
+            random_action = random.randint(0,3)
+        #     random_action = 0
+            for action in range(action_count):
+                if action == random_action:
+                    policy[state][action] = 1 - eps + eps/action_count 
+                else: # if choose_action is not the same as the current action 
+                    policy[state][action] = eps/action_count
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
@@ -87,11 +91,17 @@ for eps in epsilon:
         delta_list = []
         episode_test_reward_list = []
 
+        #Modification: added a dictionary of state and list of returns received
+        returns_list = {}
+        for s in range(state_count):
+            for a in range(action_count):
+                returns_list[(s,a)] = []
+
+        # iteration 500 times
         for episode in range(episode_length):
         
             # generate an episode of specified step count
-            state_list, action_list, reward_list = generate_episode(max_steps)
-            
+            state_list, action_list, reward_list = generate_episode(max_steps, policy)
             # calculate average reward of each episode
             average_reward_list.append(Average(reward_list))
             
@@ -103,8 +113,7 @@ for eps in epsilon:
             G = 0
             delta = 0
             
-            # initiate returns and visited list to none
-            returns_list = []
+            # initiate visited list to none
             visited_list = []
 
             # loop for each step of episode: T-1, T-2, T-3 ... 0 = 199, 198, 197 ... 0
@@ -123,42 +132,39 @@ for eps in epsilon:
 
                     # add state action pair to visited list
                     visited_list.append(state_action_pair)
-
-                    # append G to returns
-                    returns_list.append(G)
-
+                    
                     # find state and action index, for example, converting action [-1, 0] to 0, and same for state #
                     state_index = grid.states.index(state_list[t])
                     action_index = actions.index(action_list[t])
 
+                    # append G to returns
+                    returns_list[(state_index,action_index)].append(G)
+
                     # calculate max delta change for plotting max q value change
-                    delta = max(delta, np.abs(Average(returns_list) - Q_values[state_index][action_index]))      
+                    delta = max(delta, np.abs(Average(returns_list[(state_index,action_index)]) - Q_values[state_index][action_index]))      
                     
                     # write Q_values to the state-action pair
-                    Q_values[state_index][action_index] = Average(returns_list)
-
-                    # choose best action at given state
-                    choose_action = np.argmax(Q_values[state_index])
-                    
-                    # if Q_values is all zero, randomly pick an action
-                    if np.count_nonzero(Q_values[state_index]) == 0:
-                        choose_action = random.randint(0,3)
-
-                    # overwrite policy
-                    for a in range(action_count): # for action in actions [0, 1, 2, 3]
-                        if choose_action == a: # if the choose_action is the same as the current action
-                            # policy[state_index][a] = 1 - eps 
-                            policy[state_index][a] = 1 - eps + eps/action_count 
-                        else: # if choose_action is not the same as the current action
-                            # policy[state_index][a] = eps/3 
-                            policy[state_index][a] = eps/action_count
+                    Q_values[state_index][action_index] = Average(returns_list[(state_index,action_index)])
+            
+            #MODIFICATION: adjusted updating rule    
+            for s in range(state_count):
+                if np.count_nonzero(Q_values[s]) == 0:  # if Q_values is all zero, randomly pick an action
+                    choose_action = random.randint(0,3)
+                else:
+                    choose_action = np.argmax(Q_values[s]) # choose best action at given state
+                # overwrite policy
+                for a in range(action_count): # for action in actions [0, 1, 2, 3]
+                    if choose_action == a: # if the choose_action is the same as the current action
+                        policy[s][a] = 1 - eps + eps/action_count 
+                    else: # if choose_action is not the same as the current action 
+                        policy[s][a] = eps/(action_count)
             
             # append delta to list
             delta_list.append(delta)
             
             # TEST POLICY after each episode
             # Generate test trajectory with the greedy policy
-            state_list, action_list, test_reward_list = generate_episode(200)
+            state_list, action_list, test_reward_list = generate_episode(200, policy)
             
             # sum up all the rewards obtained during test trajectory and append to list
             episode_test_reward_list.append(sum(test_reward_list))
@@ -166,7 +172,6 @@ for eps in epsilon:
             # print current episode
             clear_output(wait=True)
             display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
-
         # get average test reward
         average_test_reward_list.append(Average(episode_test_reward_list))
 

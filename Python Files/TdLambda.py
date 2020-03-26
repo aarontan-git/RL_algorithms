@@ -104,7 +104,7 @@ for eps in epsilon:
 
         # define lists
         reward_episode = []
-        test_reward = []
+        test_reward_episode = []
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
@@ -184,14 +184,14 @@ for eps in epsilon:
                 policy[state][best_action] = 1
             # Generate test trajectory with the greedy policy
             state_list, action_list, test_reward_list = generate_episode(200)
-            test_reward.append(sum(test_reward_list))
+            test_reward_episode.append(sum(test_reward_list))
             #----------------------------------------------------------------------------------------
 
             # print current episode
             clear_output(wait=True)
             display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
 
-        test_reward_run.append(Average(test_reward))
+        test_reward_run.append(Average(test_reward_episode))
 
         # get average test reward
         reward_run.append(Average(reward_episode))
@@ -201,22 +201,15 @@ for eps in epsilon:
 
         # Average Reward per Episode during Training with different runs and epsilons
         plt.plot(reward_episode)
+        plt.plot(test_reward_episode)
         plt.title('Average Reward per Episode during Training, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
-        delta_frame = pd.DataFrame(reward_episode)
-        rolling_mean = delta_frame.rolling(window=window_length).mean()
-        plt.plot(rolling_mean, label='Moving Average', color='orange')
+        # delta_frame = pd.DataFrame(reward_episode)
+        # rolling_mean = delta_frame.rolling(window=window_length).mean()
+        # plt.plot(rolling_mean, label='Moving Average', color='orange')
+        plt.legend(('Training','Testing'))
         plt.savefig('Graphs/TdLambda/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
-        plt.clf()
-        time.sleep(0.1)
-
-        # Average Reward per Episode during Testing with different runs and epsilons
-        plt.plot(test_reward)
-        plt.title('Average Reward per Episode during Testing, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
-        plt.xlabel('Episode')
-        plt.ylabel('Average Reward')
-        plt.savefig('Graphs/TdLambda/test_reward_episode/test_reward_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
@@ -241,21 +234,13 @@ for eps in epsilon:
 
     # Average Reward for each Run with different Epsilon
     plt.plot(reward_run)
+    plt.plot(test_reward_run)
     plt.title('Average Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
+    plt.legend(('Training','Testing'))
     plt.savefig('Graphs/TdLambda/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
-    plt.clf()
-    time.sleep(0.1)
-
-    # Average Test Reward for each Run with different Epsilon
-    plt.plot(test_reward_run)
-    plt.title('Average Test Reward for each Run with Epsilon: '+ str(float(eps)))
-    plt.xlabel('Run')
-    plt.xticks(np.arange(runs), label)
-    plt.ylabel('Average Reward')
-    plt.savefig('Graphs/TdLambda/test_reward_run/test_reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)
 
@@ -272,6 +257,18 @@ plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
 plt.savefig('Graphs/TdLambda/reward_epsilon/reward_epsilon.png')
+plt.clf()
+time.sleep(0.1)
+
+# Average Reward for Each Epsilon
+x_label = ('0.01', '0.1', '0.25')
+plt.bar(x_label, test_reward_epsilon)
+# plt.plot(test_reward_epsilon)
+plt.title('Average Reward for Each Epsilon')
+plt.xlabel('Epsilon')
+plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
+plt.ylabel('Average Reward')
+plt.savefig('Graphs/TdLambda/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
 time.sleep(0.1)
 
@@ -296,17 +293,5 @@ plt.xticks(np.arange(runs), label)
 plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
 plt.savefig('Graphs/TdLambda/test_reward_run/test_reward_run_all.png')
-plt.clf()
-time.sleep(0.1)
-
-# Average Reward for Each Epsilon
-x_label = ('0.01', '0.1', '0.25')
-plt.bar(x_label, test_reward_epsilon)
-# plt.plot(test_reward_epsilon)
-plt.title('Average Reward for Each Epsilon')
-plt.xlabel('Epsilon')
-plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
-plt.ylabel('Average Reward')
-plt.savefig('Graphs/TdLambda/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
 time.sleep(0.1)

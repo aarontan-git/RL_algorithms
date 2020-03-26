@@ -7,27 +7,32 @@ from IPython.display import display, clear_output
 from Gridworld import Gridworld
 import pickle
 
+# define environment parameters
 actions = [[-1, 0], [0, 1], [1, 0], [0, -1]] #up, right, down, left = (clockwise from up) 
 action_count = len(actions) # total number of actions
 gridSize = 5 # create a square grid of gridSize by gridSize
 state_count = gridSize*gridSize # total number of states
 
-# define a function that chooses action based on epsilon-greedy
 def choose_action(state, epsilon):
-    
+    """
+        A Function that chooses an action based on epsilon-greedy.
+            - Explore or exploit based on probability of [epsilon, 1-epsilon]
+            - If exploit, function will output the best action based on argmax(Q_values)
+            - If explore, function will output a random action chosen amongst the rest of the actions
+            - Ties are broken randomly
+        Input: current state and the epsilon
+        Output: action index
+    """
     # choose an action type: explore or exploit
     action_type = int(np.random.choice(2, 1, p=[epsilon,1-epsilon]))
-    
     # if Q_values is all zero, randomly pick an action
     if np.count_nonzero(Q_values[state]) == 0:
         action_index = random.randint(0,3)
     else:
         # find best action based on Q values
         best_action_index = np.argmax(Q_values[state])
-
         # choose an action based on exploit or explore
         if action_type == 0: # explore
-            # pick a random action
             random_action_index = random.choice(range(4))
             # while random action is the same as the best action, pick a new action
             while random_action_index == best_action_index:
@@ -35,20 +40,26 @@ def choose_action(state, epsilon):
             action_index = random_action_index
         else: # exploit
             action_index = best_action_index
-        
     return action_index
 
-# define average function
-def Average(lst): 
+def Average(lst):
+    """
+        A Function that averages a list.
+        Input: a list
+        Output: average value
+    """
     return sum(lst) / len(lst) 
 
-# define a function that generates an episode
 def generate_episode(steps):
-
+    """
+        A Function generates an episode from a set initial state.
+        Input: Number of steps required for an episode
+        Output: 3 lists that holds the states visited, action taken and reward observed
+    """
     # set initial state
     state_vector = grid.initial_state()
 
-    # initialize state (with iniitial state), action list and reward list
+    # initialize state (with initial state), action list and reward list
     state_list = [state_vector]
     action_list = []
     reward_list = []
@@ -82,39 +93,40 @@ runs = 20
 episode_length = 500
 window_length = int(episode_length/20)
 
+# define variables for plotting purposes
 reward_epsilon = []
 reward_run_all = []
 test_reward_epsilon = []
 test_reward_run_all = []
-
-# plot
 label = []
 for r in range(1, runs+1):
     label.append(str(r))
 
+# begin iterating over every epsilon
 for eps in epsilon:
+
+    # reset some lists
     Q_values_list = []
     reward_run = []
     test_reward_run =[]
 
+    # begin iterating over a set amount of runs (20)
     for run in range(1, runs+1):
-
-        # define lists
-        reward_episode = []
-        test_reward_episode = []
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
 
         # define lists for plots
         delta_list = []
+        reward_episode = []
+        test_reward_episode = []
         
+        # Q LEARNING BEGINS ---------------------------------------------------------------------------------------------------------------------------
         # iterate over episodes
         for episode in range(episode_length):
 
-            # initialize state (output: [4, 4])
+            # initialize/reset parameters
             state = grid.initial_state()
-
             reward_list = []
             delta = 0
             
@@ -145,10 +157,8 @@ for eps in epsilon:
                 # set the next state as the current state
                 state = list(next_state_vector)
             
-            # append max change in Q value to list
+            # append lists for plotting purpose
             delta_list.append(delta)
-            
-            # sum rewards
             reward_episode.append(sum(reward_list))
             
             # TESTING AFTER EACH EPISODE ------------------------------------------------------------
@@ -171,14 +181,12 @@ for eps in epsilon:
             clear_output(wait=True)
             display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
 
+        # append lists for plotting purpose
         test_reward_run.append(Average(test_reward_episode))
-
-        # get average test reward
         reward_run.append(Average(reward_episode))
-
-        # save q values
         Q_values_list.append(Q_values)
 
+        # PLOTTING CODE--------------------------------------------------------------------------------------------------------------------
         # Average Reward per Episode during Training with different runs and epsilons
         plt.plot(reward_episode)
         plt.plot(test_reward_episode)
@@ -244,7 +252,7 @@ time.sleep(0.1)
 x_label = ('0.01', '0.1', '0.25')
 plt.bar(x_label, test_reward_epsilon)
 # plt.plot(test_reward_epsilon)
-plt.title('Average Reward for Each Epsilon')
+plt.title('Average Reward for Each Epsilon during Testing')
 plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')

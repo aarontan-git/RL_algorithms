@@ -17,28 +17,24 @@ def choose_action(state, epsilon):
     
     # choose an action type: explore or exploit
     action_type = int(np.random.choice(2, 1, p=[epsilon,1-epsilon]))
-
-    # find best action based on Q values
-    best_action_index = np.argmax(Q_values[state])
-
-    # pick a random action
-    random_action_index = random.choice(range(4))
-
-    # choose an action based on exploit or explore
-    if action_type == 0:
-        # explore
-        # while random action is the same as the best action, pick a new action
-        while random_action_index == best_action_index:
-            random_action_index = random.choice(range(4))
-        action_index = random_action_index
-    else:
-        # exploit
-        # print("exploit")
-        action_index = best_action_index
     
     # if Q_values is all zero, randomly pick an action
     if np.count_nonzero(Q_values[state]) == 0:
         action_index = random.randint(0,3)
+    else:
+        # find best action based on Q values
+        best_action_index = np.argmax(Q_values[state])
+
+        # choose an action based on exploit or explore
+        if action_type == 0: # explore
+            # pick a random action
+            random_action_index = random.choice(range(4))
+            # while random action is the same as the best action, pick a new action
+            while random_action_index == best_action_index:
+                random_action_index = random.choice(range(4))
+            action_index = random_action_index
+        else: # exploit
+            action_index = best_action_index
         
     return action_index
 
@@ -105,7 +101,7 @@ for eps in epsilon:
 
         # define lists
         reward_episode = []
-        test_reward = []
+        test_reward_episode = []
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
@@ -168,14 +164,14 @@ for eps in epsilon:
                 policy[state][best_action] = 1
             # Generate test trajectory with the greedy policy
             state_list, action_list, test_reward_list = generate_episode(200)
-            test_reward.append(sum(test_reward_list))
+            test_reward_episode.append(sum(test_reward_list))
             #----------------------------------------------------------------------------------------
 
             # print current episode
             clear_output(wait=True)
             display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
 
-        test_reward_run.append(Average(test_reward))
+        test_reward_run.append(Average(test_reward_episode))
 
         # get average test reward
         reward_run.append(Average(reward_episode))
@@ -185,22 +181,15 @@ for eps in epsilon:
 
         # Average Reward per Episode during Training with different runs and epsilons
         plt.plot(reward_episode)
-        plt.title('Average Reward per Episode during Training, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+        plt.plot(test_reward_episode)
+        plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
-        delta_frame = pd.DataFrame(reward_episode)
-        rolling_mean = delta_frame.rolling(window=window_length).mean()
-        plt.plot(rolling_mean, label='Moving Average', color='orange')
+        # delta_frame = pd.DataFrame(reward_episode)
+        # rolling_mean = delta_frame.rolling(window=window_length).mean()
+        # plt.plot(rolling_mean, label='Moving Average', color='orange')
+        plt.legend(('Training','Testing'))
         plt.savefig('Graphs/QLearning/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
-        plt.clf()
-        time.sleep(0.1)
-
-        # Average Reward per Episode during Testing with different runs and epsilons
-        plt.plot(test_reward)
-        plt.title('Average Reward per Episode during Testing, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
-        plt.xlabel('Episode')
-        plt.ylabel('Average Reward')
-        plt.savefig('Graphs/QLearning/test_reward_episode/test_reward_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.1)
 
@@ -225,21 +214,13 @@ for eps in epsilon:
 
     # Average Reward for each Run with different Epsilon
     plt.plot(reward_run)
+    plt.plot(test_reward_run)
     plt.title('Average Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
+    plt.legend(('Training','Testing'))
     plt.savefig('Graphs/QLearning/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
-    plt.clf()
-    time.sleep(0.1)
-
-    # Average Test Reward for each Run with different Epsilon
-    plt.plot(test_reward_run)
-    plt.title('Average Test Reward for each Run with Epsilon: '+ str(float(eps)))
-    plt.xlabel('Run')
-    plt.xticks(np.arange(runs), label)
-    plt.ylabel('Average Reward')
-    plt.savefig('Graphs/QLearning/test_reward_run/test_reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
     time.sleep(0.1)
 
@@ -256,6 +237,18 @@ plt.xlabel('Epsilon')
 plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
 plt.savefig('Graphs/QLearning/reward_epsilon/reward_epsilon.png')
+plt.clf()
+time.sleep(0.1)
+
+# Average Reward for Each Epsilon
+x_label = ('0.01', '0.1', '0.25')
+plt.bar(x_label, test_reward_epsilon)
+# plt.plot(test_reward_epsilon)
+plt.title('Average Reward for Each Epsilon')
+plt.xlabel('Epsilon')
+plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
+plt.ylabel('Average Reward')
+plt.savefig('Graphs/QLearning/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
 time.sleep(0.1)
 
@@ -280,17 +273,5 @@ plt.xticks(np.arange(runs), label)
 plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
 plt.savefig('Graphs/QLearning/test_reward_run/test_reward_run_all.png')
-plt.clf()
-time.sleep(0.1)
-
-# Average Reward for Each Epsilon
-x_label = ('0.01', '0.1', '0.25')
-plt.bar(x_label, test_reward_epsilon)
-# plt.plot(test_reward_epsilon)
-plt.title('Average Reward for Each Epsilon')
-plt.xlabel('Epsilon')
-plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
-plt.ylabel('Average Reward')
-plt.savefig('Graphs/QLearning/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
 time.sleep(0.1)

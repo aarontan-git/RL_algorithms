@@ -20,28 +20,24 @@ def choose_action(state, epsilon):
     
     # choose an action type: explore or exploit
     action_type = int(np.random.choice(2, 1, p=[epsilon,1-epsilon]))
-
-    # find best action based on Q values
-    best_action_index = np.argmax(Q_values[state])
-
-    # pick a random action
-    random_action_index = random.choice(range(4))
-
-    # choose an action based on exploit or explore
-    if action_type == 0:
-        # explore
-        # while random action is the same as the best action, pick a new action
-        while random_action_index == best_action_index:
-            random_action_index = random.choice(range(4))
-        action_index = random_action_index
-    else:
-        # exploit
-        # print("exploit")
-        action_index = best_action_index
     
     # if Q_values is all zero, randomly pick an action
     if np.count_nonzero(Q_values[state]) == 0:
         action_index = random.randint(0,3)
+    else:
+        # find best action based on Q values
+        best_action_index = np.argmax(Q_values[state])
+
+        # choose an action based on exploit or explore
+        if action_type == 0: # explore
+            # pick a random action
+            random_action_index = random.choice(range(4))
+            # while random action is the same as the best action, pick a new action
+            while random_action_index == best_action_index:
+                random_action_index = random.choice(range(4))
+            action_index = random_action_index
+        else: # exploit
+            action_index = best_action_index
         
     return action_index
 

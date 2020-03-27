@@ -193,18 +193,18 @@ for eps in epsilon:
 
         # PLOTTING CODE--------------------------------------------------------------------------------------------------------------------
         # Average Reward per Episode during Training with different runs and epsilons
-        plt.plot(reward_episode)
         plt.plot(test_reward_episode)
+        plt.plot(reward_episode)
         plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
         # delta_frame = pd.DataFrame(reward_episode)
         # rolling_mean = delta_frame.rolling(window=window_length).mean()
         # plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.legend(('Training','Testing'))
+        plt.legend(('Testing','Training'))
         plt.savefig('Graphs/Sarsa/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
         # max delta of each episode, where delta is the change in Q values
         plt.plot(delta_list)
@@ -217,7 +217,7 @@ for eps in epsilon:
         plt.plot(rolling_mean, label='Moving Average', color='orange')
         plt.savefig('Graphs/Sarsa/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     # append lists for plotting
     reward_run_all.append(reward_run)
@@ -226,16 +226,16 @@ for eps in epsilon:
     test_reward_epsilon.append(Average(test_reward_run))
 
     # Average Reward for each Run with different Epsilon
-    plt.plot(reward_run)
     plt.plot(test_reward_run)
+    plt.plot(reward_run)
     plt.title('Average Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
-    plt.legend(('Training','Testing'))
+    plt.legend(('Testing','Training'))
     plt.savefig('Graphs/Sarsa/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     # save Q value tables to a pickle
     with open('Graphs/Sarsa/Qvalues/Sarsa_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
@@ -251,7 +251,7 @@ plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
 plt.savefig('Graphs/Sarsa/reward_epsilon/reward_epsilon.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 
 # Average Reward for Each Epsilon
 x_label = ('0.01', '0.1', '0.25')
@@ -263,7 +263,7 @@ plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
 plt.savefig('Graphs/Sarsa/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 
 # Average Reward for each Run during Training
 for r in range(3):
@@ -275,7 +275,7 @@ plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
 plt.savefig('Graphs/Sarsa/reward_run/reward_run_all.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 
 # Average Reward for each Run during Testing
 for r in range(3):
@@ -287,5 +287,5 @@ plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
 plt.savefig('Graphs/Sarsa/test_reward_run/test_reward_run_all.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 

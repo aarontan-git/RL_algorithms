@@ -14,7 +14,7 @@ action_count = len(actions) # total number of actions
 gridSize = 5 # create a square grid of gridSize by gridSize
 state_count = gridSize*gridSize # total number of states
 
-def generate_episode(steps):
+def generate_episode(steps, policy):
     """
         A Function generates an episode from a set initial state.
         Input: Number of steps required for an episode
@@ -106,6 +106,7 @@ for eps in epsilon:
 
         # initialize q values for all state action pairs
         Q_values = np.zeros((state_count, action_count))
+        oldQ = np.zeros((state_count, action_count))
 
         # define lists
         reward_episode = []
@@ -133,6 +134,8 @@ for eps in epsilon:
             # initiate visited list to none
             visited_list = []
 
+            state_action_pair = list(np.zeros(len(t_list)))
+
             # loop for each step of episode: T-1, T-2, T-3 ... 0 = 199, 198, 197 ... 0
             for t in t_list:
 
@@ -140,12 +143,15 @@ for eps in epsilon:
                 G = gamma*G + reward_list[t]
                 
                 # combine state action pair, for example, state = [0,0], action = [0,1], state_action_pair = [0,0,0,1]
-                state_action_pair = []
-                state_action_pair.extend(state_list[t])
-                state_action_pair.extend(action_list[t])
+                # state_action_pair = []
+                # state_action_pair.extend(state_list[t])
+                # state_action_pair.extend(action_list[t])
+
+                state_action_pair[t] = state_list[t]+action_list[t]
+
 
                 # check if state action pair have been visited before (if not: continue, else: move to the next time step)
-                if state_action_pair not in visited_list:
+                if state_action_pair[t] not in visited_list:
 
                     # add state action pair to visited list
                     visited_list.append(state_action_pair)
@@ -157,11 +163,13 @@ for eps in epsilon:
                     # append G to returns
                     returns_list[(state_index,action_index)].append(G)
 
-                    # calculate max delta change for plotting max q value change
-                    delta = max(delta, np.abs(Average(returns_list[(state_index,action_index)]) - Q_values[state_index][action_index]))      
-                    
+                    oldQ[state_index][action_index] = Q_values[state_index][action_index]
+
                     # write Q_values to the state-action pair
-                    Q_values[state_index][action_index] = Average(returns_list[(state_index,action_index)])
+                    Q_values[state_index][action_index] = float(np.mean(returns_list[(state_index,action_index)]))
+
+                    # calculate max delta change for plotting max q value change
+                    delta = max(delta, np.abs(Q_values[state_index][action_index] - oldQ[state_index][action_index]))      
             
             #MODIFICATION: adjusted updating rule    
             for s in range(state_count):
@@ -172,9 +180,9 @@ for eps in epsilon:
                 # overwrite policy
                 for a in range(action_count): # for action in actions [0, 1, 2, 3]
                     if choose_action == a: # if the choose_action is the same as the current action
-                        policy[s][a] = 1 - eps + eps/action_count 
+                        policy[s][a] = 1 - eps 
                     else: # if choose_action is not the same as the current action 
-                        policy[s][a] = eps/(action_count)
+                        policy[s][a] = eps/(action_count-1)
             
             # append delta to list
             delta_list.append(delta)
@@ -201,20 +209,20 @@ for eps in epsilon:
         plt.title('Average Reward per Episode (Smoothed), Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
-        delta_frame = pd.DataFrame(reward_episode)
-        rolling_mean = delta_frame.rolling(window=window_length).mean()
-        plt.plot(rolling_mean, label='Moving Average', color='blue')
         delta_frame = pd.DataFrame(test_reward_episode)
         rolling_mean = delta_frame.rolling(window=window_length).mean()
-        plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.legend(('Training','Testing'))
+        plt.plot(rolling_mean, label='Moving Average')
+        delta_frame = pd.DataFrame(reward_episode)
+        rolling_mean = delta_frame.rolling(window=window_length).mean()
+        plt.plot(rolling_mean, label='Moving Average')
+        plt.legend(('Testing','Training'))
         plt.savefig('Graphs/MonteCarlo/reward_episode/reward_episode_smoothed_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
         # Average Reward per Episode during Training with different runs and epsilons
-        plt.plot(reward_episode)
         plt.plot(test_reward_episode)
+        plt.plot(reward_episode)
         plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
         plt.xlabel('Episode')
         plt.ylabel('Average Reward')
@@ -224,10 +232,10 @@ for eps in epsilon:
         # delta_frame = pd.DataFrame(test_reward_episode)
         # rolling_mean = delta_frame.rolling(window=window_length).mean()
         # plt.plot(rolling_mean, label='Moving Average', color='orange')
-        plt.legend(('Training','Testing'))
+        plt.legend(('Testing','Training'))
         plt.savefig('Graphs/MonteCarlo/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
         # max delta of each episode, where delta is the change in Q values
         plt.plot(delta_list)
@@ -240,7 +248,7 @@ for eps in epsilon:
         plt.plot(rolling_mean, label='Moving Average', color='orange')
         plt.savefig('Graphs/MonteCarlo/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     # append lists for plotting
     reward_run_all.append(reward_run)
@@ -249,16 +257,16 @@ for eps in epsilon:
     test_reward_epsilon.append(Average(test_reward_run))
 
     # Average Reward for each Run with different Epsilon
-    plt.plot(reward_run)
     plt.plot(test_reward_run)
+    plt.plot(reward_run)
     plt.title('Average Reward for each Run with Epsilon: '+ str(float(eps)))
     plt.xlabel('Run')
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
-    plt.legend(('Training','Testing'))
+    plt.legend(('Testing','Training'))
     plt.savefig('Graphs/MonteCarlo/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
     plt.clf()
-    time.sleep(0.1)
+    time.sleep(0.05)
 
     # save Q value tables to a pickle
     with open('Graphs/MonteCarlo/Qvalues/MonteCarlo_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
@@ -274,7 +282,7 @@ plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
 plt.savefig('Graphs/MonteCarlo/reward_epsilon/reward_epsilon.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 
 # Average Reward for Each Epsilon
 x_label = ('0.01', '0.1', '0.25')
@@ -286,7 +294,7 @@ plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
 plt.ylabel('Average Reward')
 plt.savefig('Graphs/MonteCarlo/test_reward_epsilon/test_reward_epsilon.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 
 # Average Reward for each Run during Training
 for r in range(3):
@@ -298,7 +306,7 @@ plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
 plt.savefig('Graphs/MonteCarlo/reward_run/reward_run_all.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)
 
 # Average Reward for each Run during Testing
 for r in range(3):
@@ -310,4 +318,4 @@ plt.ylabel('Average Reward')
 plt.legend(('0.01','0.1','0.25'))
 plt.savefig('Graphs/MonteCarlo/test_reward_run/test_reward_run_all.png')
 plt.clf()
-time.sleep(0.1)
+time.sleep(0.05)

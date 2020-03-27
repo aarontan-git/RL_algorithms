@@ -14,7 +14,7 @@ action_count = len(actions) # total number of actions
 gridSize = 5 # create a square grid of gridSize by gridSize
 state_count = gridSize*gridSize # total number of states
 
-def generate_episode(steps):
+def generate_episode(steps,):
     """
         A Function generates an episode from a set initial state.
         Input: Number of steps required for an episode

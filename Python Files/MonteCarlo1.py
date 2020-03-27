@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import random
 from random import uniform
+import random
 import time
 from IPython.display import display, clear_output
 from Gridworld import Gridworld
@@ -15,43 +15,6 @@ gridSize = 5 # create a square grid of gridSize by gridSize
 state_count = gridSize*gridSize # total number of states
 
 global Q_values
-
-def choose_action(state, epsilon):
-    """
-        A Function that chooses an action based on epsilon-greedy.
-            - Explore or exploit based on probability of [epsilon, 1-epsilon]
-            - If exploit, function will output the best action based on argmax(Q_values)
-            - If explore, function will output a random action chosen amongst the rest of the actions
-            - Ties are broken randomly
-        Input: current state and the epsilon
-        Output: action index
-    """
-    # choose an action type: explore or exploit
-    action_type = int(np.random.choice(2, 1, p=[epsilon,1-epsilon]))
-    # if Q_values is all zero, randomly pick an action
-    if np.count_nonzero(Q_values[state]) == 0:
-        action_index = random.randint(0,3)
-    else:
-        # find best action based on Q values
-        best_action_index = np.argmax(Q_values[state])
-        # choose an action based on exploit or explore
-        if action_type == 0: # explore
-            random_action_index = random.choice(range(4))
-            # while random action is the same as the best action, pick a new action
-            while random_action_index == best_action_index:
-                random_action_index = random.choice(range(4))
-            action_index = random_action_index
-        else: # exploit
-            action_index = best_action_index
-    return action_index
-
-def Average(lst):
-    """
-        A Function that averages a list.
-        Input: a list
-        Output: average value
-    """
-    return sum(lst) / len(lst) 
 
 def generate_episode(steps, grid, policy):
     """
@@ -85,25 +48,38 @@ def generate_episode(steps, grid, policy):
         
     return state_list, action_list, reward_list
 
-def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
+def Average(lst):
     """
-        A Function that performs TdLambda Algorithm.
-        Input: gamma, learning rate, epsilon (in list), runs, total number of steps, number of episodes, lamda
-        Output: variety of graphs that illustrate the algorithm's performance
+        A Function that averages a list.
+        Input: a list
+        Output: average value
     """
+    return sum(lst) / len(lst) 
+
+def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
+
     # create a grid object
     grid = Gridworld(5)
     window_length = int(episode_length/20)
+    max_steps = step_number
 
     # define variables for plotting purposes
     reward_epsilon = []
     reward_run_all = []
     test_reward_epsilon = []
     test_reward_run_all = []
+
+    # define variables for keeping track of time steps
+    Terminal = max_steps
+    t_list=[]
+    for i in range(max_steps):
+        t = Terminal - i - 1
+        t_list.append(t)
     label = []
     for r in range(1, runs+1):
         label.append(str(r))
 
+    # Monte Carlo BEGINS ---------------------------------------------------------------------------------------------------------------------------
     # begin iterating over every epsilon
     for eps in epsilon:
 
@@ -115,115 +91,117 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
         # begin iterating over a set amount of runs (20)
         for run in range(1, runs+1):
 
+            # random e soft policy
+            policy = np.zeros((state_count, action_count))
+            for state in range(len(policy)):
+                random_action = random.randint(0,3)
+            #     random_action = 0
+                for action in range(action_count):
+                    if action == random_action:
+                        policy[state][action] = 1 - eps + eps/action_count 
+                    else: # if choose_action is not the same as the current action 
+                        policy[state][action] = eps/action_count
+
             # initialize q values for all state action pairs
             global Q_values
             Q_values = np.zeros((state_count, action_count))
+            oldQ = np.zeros((state_count, action_count))
 
             # define lists
             reward_episode = []
             test_reward_episode = []
             delta_list = []
 
-            # TdLambda BEGINS ---------------------------------------------------------------------------------------------------------------------------
-            # iterate over episodes
+            #Modification: added a dictionary of state and list of returns received
+            returns_list = {}
+            for s in range(state_count):
+                for a in range(action_count):
+                    returns_list[(s,a)] = []
+
+            # iteration 500 times
             for episode in range(episode_length):
-                
-                # initialize delta for eligibility trace
-                delta_ = 0
-                
-                # delta for change in Q values
+            
+                # generate an episode of specified step count
+                state_list, action_list, reward_list = generate_episode(max_steps, grid, policy)
+                # sum reward for episode
+                reward_episode.append(sum(reward_list))
+
+                # intialize variables
+                G = 0
                 delta = 0
                 
-                # initialize S,A (? should i choose an Action using epsilon-greedy here or just select an Action?)
-                state_vector = grid.initial_state()
-                state_index = grid.states.index(state_vector)
-                
-                # initialize  eligibility traces for all state action pairs of all states to 0
-                z_values = np.zeros((state_count, action_count))
-                
-                action_index = choose_action(state_index, eps)
-                action_vector = actions[action_index]
-                
-                reward_list = []
-                
-                # iteration 200 steps of the episode
-                for i in range(step_number):
+                # initiate visited list to none
+                visited_list = []
 
-                    # Take action A, oberserve R, S'
-                    next_state_vector, reward = grid.transition_reward(state_vector, action_vector)
-                    next_state_index = grid.states.index(list(next_state_vector))
-                    
-                    reward_list.append(reward)
+                state_action_pair = list(np.zeros(len(t_list)))
 
-                    # Choose A' from S' using policy derived from Q (eg. epsilon-greedy)
-                    next_action_index = choose_action(next_state_index, eps)
-                    next_action_vector = actions[next_action_index]
+                # loop for each step of episode: T-1, T-2, T-3 ... 0 = 199, 198, 197 ... 0
+                for t in t_list:
 
-                    # update the action-value form of the TD error
-                    delta_ = reward + gamma*Q_values[next_state_index][next_action_index] - Q_values[state_index][action_index]
+                    # calculate G: starting with the last reward at index t (naturally accounts for pseudocode's "t-1")
+                    G = gamma*G + reward_list[t]
                     
-                    # accumulate traces (? big S and big A?)
-                    z_values[state_index][action_index] +=1
-                    
-                    # calculate max Q_value change for plotting max delta
-                    Q_value = Q_values[state_index][action_index] + lr*delta_*z_values[state_index][action_index]
-                    delta = max(delta, np.abs(Q_value - Q_values[state_index][action_index]))   
-                    
-                    # update Q value
-                    Q_values[state_index][action_index] = Q_values[state_index][action_index] + lr*delta_*z_values[state_index][action_index]
-                    
-                    # update z value
-                    z_values[state_index][action_index] = gamma*lamda*z_values[state_index][action_index]
-                    
-                    # update state and action vector
-                    state_vector = list(next_state_vector)
-                    state_index = grid.states.index(state_vector)
-                    action_vector = list(next_action_vector)
-                    action_index = next_action_index
+                    # combine state action pair, for example, state = [0,0], action = [0,1], state_action_pair = [0,0,0,1]
+                    # state_action_pair = []
+                    # state_action_pair.extend(state_list[t])
+                    # state_action_pair.extend(action_list[t])
+
+                    state_action_pair[t] = state_list[t]+action_list[t]
+
+
+                    # check if state action pair have been visited before (if not: continue, else: move to the next time step)
+                    if state_action_pair[t] not in visited_list:
+
+                        # add state action pair to visited list
+                        visited_list.append(state_action_pair)
+                        
+                        # find state and action index, for example, converting action [-1, 0] to 0, and same for state #
+                        state_index = grid.states.index(state_list[t])
+                        action_index = actions.index(action_list[t])
+
+                        # append G to returns
+                        returns_list[(state_index,action_index)].append(G)
+
+                        oldQ[state_index][action_index] = Q_values[state_index][action_index]
+
+                        # write Q_values to the state-action pair
+                        Q_values[state_index][action_index] = float(np.mean(returns_list[(state_index,action_index)]))
+
+                        # calculate max delta change for plotting max q value change
+                        delta = max(delta, np.abs(Q_values[state_index][action_index] - oldQ[state_index][action_index]))      
                 
-                # append lists for plotting purpose
+                #MODIFICATION: adjusted updating rule    
+                for s in range(state_count):
+                    if np.count_nonzero(Q_values[s]) == 0:  # if Q_values is all zero, randomly pick an action
+                        choose_action = random.randint(0,3)
+                    else:
+                        choose_action = np.argmax(Q_values[s]) # choose best action at given state
+                    # overwrite policy
+                    for a in range(action_count): # for action in actions [0, 1, 2, 3]
+                        if choose_action == a: # if the choose_action is the same as the current action
+                            policy[s][a] = 1 - eps 
+                        else: # if choose_action is not the same as the current action 
+                            policy[s][a] = eps/(action_count-1)
+                
+                # append delta to list
                 delta_list.append(delta)
-                reward_episode.append(sum(reward_list))
                 
                 # TESTING AFTER EACH EPISODE ------------------------------------------------------------
-                # initialize policy
-                policy = np.zeros((state_count, action_count))
-                # Generate Greedy policy based on Q_values after each episode
-                for state in range(len(Q_values)):
-                    # find the best action at each state
-                    best_action = np.argmax(Q_values[state])
-                    # write deterministic policy based on Q_values
-                    policy[state][best_action] = 1
                 # Generate test trajectory with the greedy policy
-                state_list, action_list, test_reward_list = generate_episode(step_number, grid, policy)
+                state_list, action_list, test_reward_list = generate_episode(max_steps, grid, policy)
                 test_reward_episode.append(sum(test_reward_list))
                 #----------------------------------------------------------------------------------------
 
                 # print current episode
                 clear_output(wait=True)
                 display('Epsilon: ' + str(eps) + ' Run: ' + str(run) + ' Episode: ' + str(episode))
-
-            test_reward_run.append(Average(test_reward_episode))
-
+            
             # append lists for plotting purpose
+            test_reward_run.append(Average(test_reward_episode))
             reward_run.append(Average(reward_episode))
             Q_values_list.append(Q_values)
 
             # PLOTTING CODE--------------------------------------------------------------------------------------------------------------------
-            # Average Reward per Episode during Training with different runs and epsilons
-            plt.plot(test_reward_episode)
-            plt.plot(reward_episode)
-            plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
-            plt.xlabel('Episode')
-            plt.ylabel('Average Reward')
-            # delta_frame = pd.DataFrame(reward_episode)
-            # rolling_mean = delta_frame.rolling(window=window_length).mean()
-            # plt.plot(rolling_mean, label='Moving Average', color='orange')
-            plt.legend(('Testing','Training'))
-            plt.savefig('Graphs/TdLambda/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
-            plt.clf()
-            time.sleep(0.05)
-
             # Average Reward per Episode during Training with different runs and epsilons
             # plt.plot(reward_episode)
             # plt.plot(test_reward_episode)
@@ -237,23 +215,40 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
             rolling_mean = delta_frame.rolling(window=window_length).mean()
             plt.plot(rolling_mean, label='Moving Average')
             plt.legend(('Testing','Training'))
-            plt.savefig('Graphs/TdLambda/reward_episode/reward_episode_smoothed_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+            plt.savefig('Graphs/MonteCarlo/reward_episode/reward_episode_smoothed_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
+            plt.clf()
+            time.sleep(0.05)
+
+            # Average Reward per Episode during Training with different runs and epsilons
+            plt.plot(test_reward_episode)
+            plt.plot(reward_episode)
+            plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+            plt.xlabel('Episode')
+            plt.ylabel('Average Reward')
+            # delta_frame = pd.DataFrame(reward_episode)
+            # rolling_mean = delta_frame.rolling(window=window_length).mean()
+            # plt.plot(rolling_mean, label='Moving Average', color='blue')
+            # delta_frame = pd.DataFrame(test_reward_episode)
+            # rolling_mean = delta_frame.rolling(window=window_length).mean()
+            # plt.plot(rolling_mean, label='Moving Average', color='orange')
+            plt.legend(('Testing','Training'))
+            plt.savefig('Graphs/MonteCarlo/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
             plt.clf()
             time.sleep(0.05)
 
             # max delta of each episode, where delta is the change in Q values
             plt.plot(delta_list)
-            plt.title('TdLambda Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
+            plt.title('Monte Carlo Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Max Delta')
             # plot moving average
             delta_frame = pd.DataFrame(delta_list)
             rolling_mean = delta_frame.rolling(window=window_length).mean()
             plt.plot(rolling_mean, label='Moving Average', color='orange')
-            plt.savefig('Graphs/TdLambda/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
+            plt.savefig('Graphs/MonteCarlo/delta/delta_run_'+str(int(run))+'_epsilon_' + str(float(eps)) + '.png')
             plt.clf()
             time.sleep(0.05)
-        
+
         # append lists for plotting
         reward_run_all.append(reward_run)
         test_reward_run_all.append(test_reward_run)
@@ -268,12 +263,12 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
         plt.xticks(np.arange(runs), label)
         plt.ylabel('Average Reward')
         plt.legend(('Testing','Training'))
-        plt.savefig('Graphs/TdLambda/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
+        plt.savefig('Graphs/MonteCarlo/reward_run/reward_run_epsilon_' + str(float(eps)) + '.png')
         plt.clf()
         time.sleep(0.05)
 
         # save Q value tables to a pickle
-        with open('Graphs/TdLambda/Qvalues/TdLambda_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
+        with open('Graphs/MonteCarlo/Qvalues/MonteCarlo_Qvalues_' + str(eps) + '.pkl', 'wb') as f:
             pickle.dump(Q_values_list, f)
 
     # Average Reward for each Epsilon
@@ -284,7 +279,7 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
     plt.xlabel('Epsilon')
     plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
     plt.ylabel('Average Reward')
-    plt.savefig('Graphs/TdLambda/reward_epsilon/reward_epsilon.png')
+    plt.savefig('Graphs/MonteCarlo/reward_epsilon/reward_epsilon.png')
     plt.clf()
     time.sleep(0.05)
 
@@ -296,7 +291,7 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
     plt.xlabel('Epsilon')
     plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
     plt.ylabel('Average Reward')
-    plt.savefig('Graphs/TdLambda/test_reward_epsilon/test_reward_epsilon.png')
+    plt.savefig('Graphs/MonteCarlo/test_reward_epsilon/test_reward_epsilon.png')
     plt.clf()
     time.sleep(0.05)
 
@@ -308,7 +303,7 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
     plt.legend(('0.01','0.1','0.25'))
-    plt.savefig('Graphs/TdLambda/reward_run/reward_run_all.png')
+    plt.savefig('Graphs/MonteCarlo/reward_run/reward_run_all.png')
     plt.clf()
     time.sleep(0.05)
 
@@ -320,6 +315,6 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
     plt.xticks(np.arange(runs), label)
     plt.ylabel('Average Reward')
     plt.legend(('0.01','0.1','0.25'))
-    plt.savefig('Graphs/TdLambda/test_reward_run/test_reward_run_all.png')
+    plt.savefig('Graphs/MonteCarlo/test_reward_run/test_reward_run_all.png')
     plt.clf()
     time.sleep(0.05)

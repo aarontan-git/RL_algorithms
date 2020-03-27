@@ -82,15 +82,12 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
     # Monte Carlo BEGINS ---------------------------------------------------------------------------------------------------------------------------
     # begin iterating over every epsilon
     for eps in epsilon:
-
         # reset some lists
         Q_values_list = []
         reward_run = []
         test_reward_run =[]
-
         # begin iterating over a set amount of runs (20)
         for run in range(1, runs+1):
-
             # random e soft policy
             policy = np.zeros((state_count, action_count))
             for state in range(len(policy)):
@@ -101,76 +98,52 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
                         policy[state][action] = 1 - eps + eps/action_count 
                     else: # if choose_action is not the same as the current action 
                         policy[state][action] = eps/action_count
-
             # initialize q values for all state action pairs
             global Q_values
             Q_values = np.zeros((state_count, action_count))
             oldQ = np.zeros((state_count, action_count))
-
             # define lists
             reward_episode = []
             test_reward_episode = []
             delta_list = []
-
             #Modification: added a dictionary of state and list of returns received
             returns_list = {}
             for s in range(state_count):
                 for a in range(action_count):
                     returns_list[(s,a)] = []
-
             # iteration 500 times
             for episode in range(episode_length):
-            
                 # generate an episode of specified step count
                 state_list, action_list, reward_list = generate_episode(max_steps, grid, policy)
                 # sum reward for episode
                 reward_episode.append(sum(reward_list))
-
                 # intialize variables
                 G = 0
                 delta = 0
-                
-                # initiate visited list to none
                 visited_list = []
-
                 state_action_pair = list(np.zeros(len(t_list)))
-
                 # loop for each step of episode: T-1, T-2, T-3 ... 0 = 199, 198, 197 ... 0
                 for t in t_list:
-
                     # calculate G: starting with the last reward at index t (naturally accounts for pseudocode's "t-1")
                     G = gamma*G + reward_list[t]
-                    
-                    # combine state action pair, for example, state = [0,0], action = [0,1], state_action_pair = [0,0,0,1]
-                    # state_action_pair = []
-                    # state_action_pair.extend(state_list[t])
-                    # state_action_pair.extend(action_list[t])
-
+                    # combine state and action pair together to check if it has been visited before
                     state_action_pair[t] = state_list[t]+action_list[t]
-
-
                     # check if state action pair have been visited before (if not: continue, else: move to the next time step)
                     if state_action_pair[t] not in visited_list:
-
                         # add state action pair to visited list
                         visited_list.append(state_action_pair)
-                        
                         # find state and action index, for example, converting action [-1, 0] to 0, and same for state #
                         state_index = grid.states.index(state_list[t])
                         action_index = actions.index(action_list[t])
-
                         # append G to returns
                         returns_list[(state_index,action_index)].append(G)
-
+                        # make a copy of the q values to calculate the delta
                         oldQ[state_index][action_index] = Q_values[state_index][action_index]
-
                         # write Q_values to the state-action pair
                         Q_values[state_index][action_index] = float(np.mean(returns_list[(state_index,action_index)]))
-
                         # calculate max delta change for plotting max q value change
                         delta = max(delta, np.abs(Q_values[state_index][action_index] - oldQ[state_index][action_index]))      
-                
-                #MODIFICATION: adjusted updating rule    
+                # Update policy 
                 for s in range(state_count):
                     if np.count_nonzero(Q_values[s]) == 0:  # if Q_values is all zero, randomly pick an action
                         choose_action = random.randint(0,3)
@@ -203,8 +176,6 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
 
             # PLOTTING CODE--------------------------------------------------------------------------------------------------------------------
             # Average Reward per Episode during Training with different runs and epsilons
-            # plt.plot(reward_episode)
-            # plt.plot(test_reward_episode)
             plt.title('Average Reward per Episode (Smoothed), Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Average Reward')
@@ -225,12 +196,6 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
             plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Average Reward')
-            # delta_frame = pd.DataFrame(reward_episode)
-            # rolling_mean = delta_frame.rolling(window=window_length).mean()
-            # plt.plot(rolling_mean, label='Moving Average', color='blue')
-            # delta_frame = pd.DataFrame(test_reward_episode)
-            # rolling_mean = delta_frame.rolling(window=window_length).mean()
-            # plt.plot(rolling_mean, label='Moving Average', color='orange')
             plt.legend(('Testing','Training'))
             plt.savefig('Graphs/MonteCarlo/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
             plt.clf()
@@ -241,7 +206,6 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
             plt.title('Monte Carlo Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Max Delta')
-            # plot moving average
             delta_frame = pd.DataFrame(delta_list)
             rolling_mean = delta_frame.rolling(window=window_length).mean()
             plt.plot(rolling_mean, label='Moving Average', color='orange')
@@ -274,7 +238,6 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
     # Average Reward for each Epsilon
     x_label = ('0.01', '0.1', '0.25')
     plt.bar(x_label, reward_epsilon)
-    # plt.plot(reward_epsilon)
     plt.title('Average Reward for each Epsilon during Training')
     plt.xlabel('Epsilon')
     plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
@@ -286,7 +249,6 @@ def MonteCarlo(gamma, lr, epsilon, runs, step_number, episode_length):
     # Average Reward for Each Epsilon
     x_label = ('0.01', '0.1', '0.25')
     plt.bar(x_label, test_reward_epsilon)
-    # plt.plot(test_reward_epsilon)
     plt.title('Average Reward for Each Epsilon during Testing')
     plt.xlabel('Epsilon')
     plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))

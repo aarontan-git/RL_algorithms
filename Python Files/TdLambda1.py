@@ -216,17 +216,12 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
             plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Average Reward')
-            # delta_frame = pd.DataFrame(reward_episode)
-            # rolling_mean = delta_frame.rolling(window=window_length).mean()
-            # plt.plot(rolling_mean, label='Moving Average', color='orange')
             plt.legend(('Testing','Training'))
             plt.savefig('Graphs/TdLambda/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
             plt.clf()
             time.sleep(0.05)
 
             # Average Reward per Episode during Training with different runs and epsilons
-            # plt.plot(reward_episode)
-            # plt.plot(test_reward_episode)
             plt.title('Average Reward per Episode (Smoothed), Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Average Reward')
@@ -246,7 +241,6 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
             plt.title('TdLambda Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Max Delta')
-            # plot moving average
             delta_frame = pd.DataFrame(delta_list)
             rolling_mean = delta_frame.rolling(window=window_length).mean()
             plt.plot(rolling_mean, label='Moving Average', color='orange')
@@ -279,7 +273,6 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
     # Average Reward for each Epsilon
     x_label = ('0.01', '0.1', '0.25')
     plt.bar(x_label, reward_epsilon)
-    # plt.plot(reward_epsilon)
     plt.title('Average Reward for each Epsilon during Training')
     plt.xlabel('Epsilon')
     plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))
@@ -291,7 +284,6 @@ def TdLambda(gamma, lr, epsilon, runs, step_number, episode_length, lamda):
     # Average Reward for Each Epsilon
     x_label = ('0.01', '0.1', '0.25')
     plt.bar(x_label, test_reward_epsilon)
-    # plt.plot(test_reward_epsilon)
     plt.title('Average Reward for Each Epsilon during Testing')
     plt.xlabel('Epsilon')
     plt.xticks(np.arange(3), ('0.01', '0.1', '0.25'))

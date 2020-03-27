@@ -196,9 +196,6 @@ def Sarsa(gamma, lr, epsilon, runs, step_number, episode_length):
             plt.title('Average Reward per Episode, Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Average Reward')
-            # delta_frame = pd.DataFrame(reward_episode)
-            # rolling_mean = delta_frame.rolling(window=window_length).mean()
-            # plt.plot(rolling_mean, label='Moving Average', color='orange')
             plt.legend(('Testing','Training'))
             plt.savefig('Graphs/Sarsa/reward_episode/reward_episode_run_' + str(int(run)) + '_epsilon_' + str(float(eps)) + '.png')
             plt.clf()
@@ -209,7 +206,6 @@ def Sarsa(gamma, lr, epsilon, runs, step_number, episode_length):
             plt.title('Sarsa Max Delta for Run: ' + str(int(run)) + ', Epsilon: ' + str(float(eps)))
             plt.xlabel('Episode')
             plt.ylabel('Max Delta')
-            # plot moving average
             delta_frame = pd.DataFrame(delta_list)
             rolling_mean = delta_frame.rolling(window=window_length).mean()
             plt.plot(rolling_mean, label='Moving Average', color='orange')

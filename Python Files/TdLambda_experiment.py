@@ -1,5 +1,5 @@
 # import TdLambda function
-from TdLambda1 import TdLambda
+from TdLambda import TdLambda
 
 # define experiment parameters
 gamma = 0.99

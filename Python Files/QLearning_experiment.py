@@ -1,5 +1,5 @@
 # import Q Learning function
-from QLearning1 import QLearning
+from QLearning import QLearning
 
 # define experiment parameters
 gamma = 0.99

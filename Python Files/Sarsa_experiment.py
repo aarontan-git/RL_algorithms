@@ -1,5 +1,5 @@
 # import Sarsa function
-from Sarsa1 import Sarsa
+from Sarsa import Sarsa
 
 # define experiment parameters
 gamma = 0.99

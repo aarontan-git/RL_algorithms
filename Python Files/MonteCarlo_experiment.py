@@ -1,5 +1,5 @@
 # import Monte Carlo function
-from MonteCarlo1 import MonteCarlo
+from MonteCarlo import MonteCarlo
 
 # define experiment parameters
 gamma = 0.99

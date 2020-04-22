@@ -1,6 +1,11 @@
 import numpy as np
 
 class Gridworld():
+    """
+        A Function generates an episode from a set initial state.
+        Input: Number of steps required for an episode
+        Output: 3 lists that holds the states visited, action taken and reward observed
+    """
     def __init__(self, gridSize):
         self.valueMap = np.zeros((gridSize, gridSize))
         self.states = [[i, j] for i in range(gridSize) for j in range(gridSize)]
